@@ -11,6 +11,6 @@ export class EventController {
   async addPoint(@Body() eventDto: EventDto) {
     await this.eventService.checkActionType(eventDto);
 
-    return Response.ok('포인트 부여 성공');
+    return Response.ok('마일리지 적립 이벤트 발생');
   }
 }
