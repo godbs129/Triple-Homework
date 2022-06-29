@@ -22,6 +22,7 @@ export class EventService {
     if (action === ActionType.ADD) {
       await this.addReviewPoint(eventDto);
     } else if (action === ActionType.MOD) {
+      await this.modReviewPoint(eventDto);
     } else {
       await this.delReview(eventDto);
     }
@@ -57,6 +58,37 @@ export class EventService {
       placeId: eventDto.placeId,
     });
     await this.pointRepository.save(addedPoint);
+  }
+
+  async modReviewPoint(eventDto: EventDto): Promise<void> {
+    const pointLog: Point = await this.getPointByUserAndReview(
+      eventDto.userId,
+      eventDto.reviewId,
+    );
+
+    let modifyPointLog: Point;
+    delete pointLog.id;
+    if (!pointLog.photo) {
+      if (eventDto.attachedPhotoIds.length >= 1) {
+        modifyPointLog = this.pointRepository.create({
+          ...pointLog,
+          increase: true,
+          point: 1,
+        });
+      }
+    }
+
+    if (pointLog.photo) {
+      if (eventDto.attachedPhotoIds.length < 1) {
+        modifyPointLog = this.pointRepository.create({
+          ...pointLog,
+          increase: false,
+          point: 1,
+        });
+      }
+    }
+
+    await this.pointRepository.save(modifyPointLog);
   }
 
   async delReview(eventDto: EventDto): Promise<void> {
