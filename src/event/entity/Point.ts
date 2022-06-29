@@ -8,6 +8,12 @@ export class Point {
   id!: string;
 
   @Column({
+    name: 'increase',
+    nullable: false,
+  })
+  increase!: boolean;
+
+  @Column({
     name: 'review_id',
     nullable: false,
   })

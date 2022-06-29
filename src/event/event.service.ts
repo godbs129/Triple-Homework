@@ -49,6 +49,7 @@ export class EventService {
 
     const addedPoint = this.pointRepository.create({
       reviewId: eventDto.reviewId,
+      increase: true,
       userId: eventDto.userId,
       point: point,
       content: eventDto.content.length >= 1 ? true : false,
@@ -68,7 +69,12 @@ export class EventService {
       throw new NotFoundException('포인트가 존재하지 않습니다');
     }
 
-    await this.pointRepository.remove(pointLog);
+    delete pointLog.id;
+    const minusPointLog: Point = this.pointRepository.create({
+      ...pointLog,
+      increase: false,
+    });
+    await this.pointRepository.save(minusPointLog);
   }
 
   async getPointByUserAndReview(
