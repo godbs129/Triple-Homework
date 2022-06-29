@@ -11,14 +11,14 @@ export class Point {
     name: 'review_id',
     nullable: false,
   })
-  @Index()
+  @Index('idx_review_id')
   reviewId!: string;
 
   @Column({
     name: 'user_id',
     nullable: false,
   })
-  @Index()
+  @Index('idx_user_id')
   userId!: string;
 
   @Column({
