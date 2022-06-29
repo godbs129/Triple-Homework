@@ -26,4 +26,22 @@ export class Point {
     nullable: false,
   })
   point!: number;
+
+  @Column({
+    name: 'content',
+    nullable: false,
+  })
+  content!: boolean;
+
+  @Column({
+    name: 'photo',
+    nullable: false,
+  })
+  photo!: boolean;
+
+  @Column({
+    name: 'place_id',
+    nullable: false,
+  })
+  placeId!: string;
 }
