@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ActionType } from 'src/common/enum/point.enum';
 import { Repository } from 'typeorm';
@@ -18,8 +22,8 @@ export class EventService {
     if (action === ActionType.ADD) {
       await this.addReviewPoint(eventDto);
     } else if (action === ActionType.MOD) {
-      this.modReviewPoint(eventDto);
     } else {
+      await this.delReview(eventDto);
     }
   }
 
@@ -34,6 +38,12 @@ export class EventService {
       throw new ConflictException('이미 작성한 리뷰입니다');
     }
 
+    const isFirstReviewByPlace: Point = await this.getPointLogByPlace(
+      eventDto.placeId,
+    );
+
+    if (isFirstReviewByPlace === null) point++;
+
     if (eventDto.content.length >= 1) point++;
     if (eventDto.attachedPhotoIds.length >= 1) point++;
 
@@ -41,20 +51,42 @@ export class EventService {
       reviewId: eventDto.reviewId,
       userId: eventDto.userId,
       point: point,
+      content: eventDto.content.length >= 1 ? true : false,
+      photo: eventDto.attachedPhotoIds.length >= 1 ? true : false,
+      placeId: eventDto.placeId,
     });
     await this.pointRepository.save(addedPoint);
   }
 
-  async modReviewPoint(eventDto: EventDto): Promise<void> {}
+  async delReview(eventDto: EventDto): Promise<void> {
+    const pointLog: Point = await this.getPointByUserAndReview(
+      eventDto.userId,
+      eventDto.reviewId,
+    );
+
+    if (pointLog === null) {
+      throw new NotFoundException('포인트가 존재하지 않습니다');
+    }
+
+    await this.pointRepository.remove(pointLog);
+  }
 
   async getPointByUserAndReview(
     userId: string,
     reviewId: string,
-  ): Promise<Point> {
+  ): Promise<Point | null> {
     return this.pointRepository.findOne({
       where: {
         userId: userId,
         reviewId: reviewId,
+      },
+    });
+  }
+
+  async getPointLogByPlace(placeId: string): Promise<Point | null> {
+    return this.pointRepository.findOne({
+      where: {
+        placeId: placeId,
       },
     });
   }
