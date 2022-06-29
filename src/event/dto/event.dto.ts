@@ -1,7 +1,7 @@
 import { IsArray, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { ActionType } from 'src/common/enum/point.enum';
 
-export class PointDto {
+export class EventDto {
   @IsNotEmpty()
   @IsString()
   type!: string;
@@ -14,11 +14,9 @@ export class PointDto {
   @IsString()
   reviewId!: string;
 
-  @IsNotEmpty()
   @IsString()
   content!: string;
 
-  @IsNotEmpty()
   @IsArray()
   attachedPhotoIds!: string[];
 
