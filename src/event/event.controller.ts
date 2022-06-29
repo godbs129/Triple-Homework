@@ -1,9 +1,9 @@
 import { Controller, Get, Post } from '@nestjs/common';
-import { PointService } from './event.service';
+import { EventService } from './event.service';
 
-@Controller('point')
-export class PointController {
-  constructor(private readonly pointService: PointService) {}
+@Controller('event')
+export class EventController {
+  constructor(private readonly eventService: EventService) {}
 
   // @Post('/')
   // async;

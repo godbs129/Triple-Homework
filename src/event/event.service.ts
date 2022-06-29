@@ -4,9 +4,9 @@ import { Repository } from 'typeorm';
 import { Point } from './entity/Point';
 
 @Injectable()
-export class PointService {
+export class EventService {
   constructor(
     @InjectRepository(Point)
-    private readonly postRepository: Repository<Point>,
+    private readonly pointRepository: Repository<Point>,
   ) {}
 }

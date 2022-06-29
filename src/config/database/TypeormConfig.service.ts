@@ -18,7 +18,6 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       port: +this.configService.get<number>('DB_PORT'),
       entities: [Point],
       synchronize: true,
-      logging: ['query'],
     };
   }
 }
