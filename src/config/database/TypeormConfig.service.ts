@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmOptionsFactory } from '@nestjs/typeorm';
-import { Point } from 'src/point/entity/Point';
+import { Point } from 'src/event/entity/Point';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
 
 @Injectable()
@@ -18,6 +18,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       port: +this.configService.get<number>('DB_PORT'),
       entities: [Point],
       synchronize: true,
+      logging: ['query'],
     };
   }
 }
