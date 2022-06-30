@@ -2,6 +2,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ActionType } from 'src/common/enum/point.enum';
@@ -79,6 +80,7 @@ export class EventService {
       photo: eventDto.attachedPhotoIds.length >= 1 ? true : false,
       placeId: eventDto.placeId,
     });
+
     await this.pointRepository.save(addedPoint);
   }
 
@@ -87,6 +89,9 @@ export class EventService {
       eventDto.userId,
       eventDto.reviewId,
     );
+    if (pointLog === null) {
+      throw new NotFoundException('존재하지 않는 리뷰입니다.');
+    }
 
     let modifyPointLog: Point;
     delete pointLog.id;
@@ -118,6 +123,9 @@ export class EventService {
       eventDto.userId,
       eventDto.reviewId,
     );
+    if (pointLog === null) {
+      throw new NotFoundException('존재하지 않는 리뷰입니다.');
+    }
 
     const leftPoint: number = await this.checkPointLeft(
       eventDto.userId,
