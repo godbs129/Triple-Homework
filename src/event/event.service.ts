@@ -2,7 +2,6 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ActionType } from 'src/common/enum/point.enum';
@@ -17,7 +16,30 @@ export class EventService {
     private readonly pointRepository: Repository<Point>,
   ) {}
 
-  async checkActionType(eventDto: EventDto) {
+  async getPointByUserId(userId: string) {
+    const pointLogs: Point[] = await this.pointRepository.find({
+      where: {
+        userId: userId,
+      },
+    });
+
+    if (pointLogs.length < 1) {
+      throw new ForbiddenException('마일리지 내역이 존재하지 않습니다.');
+    }
+
+    let leftPoint: number = 0;
+    pointLogs.forEach((point) => {
+      if (!point.increase) {
+        leftPoint -= point.point;
+      } else {
+        leftPoint += point.point;
+      }
+    });
+
+    return leftPoint;
+  }
+
+  async checkActionType(eventDto: EventDto): Promise<void> {
     const { action } = eventDto;
 
     if (action === ActionType.ADD) {
@@ -153,7 +175,6 @@ export class EventService {
       }
     });
 
-    console.log(leftPoint);
     return leftPoint;
   }
 }
