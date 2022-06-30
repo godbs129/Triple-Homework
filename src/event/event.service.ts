@@ -17,11 +17,10 @@ export class EventService {
   ) {}
 
   async getPointByUserId(userId: string) {
-    const pointLogs: Point[] = await this.pointRepository.find({
-      where: {
-        userId: userId,
-      },
-    });
+    const pointLogs: Point[] = await this.pointRepository
+      .createQueryBuilder()
+      .where('user_id = :userId', { userId })
+      .getMany();
 
     if (pointLogs.length < 1) {
       throw new ForbiddenException('마일리지 내역이 존재하지 않습니다.');
