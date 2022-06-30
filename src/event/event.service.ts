@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -97,13 +98,19 @@ export class EventService {
       eventDto.reviewId,
     );
 
-    if (pointLog === null) {
-      throw new NotFoundException('포인트가 존재하지 않습니다');
+    const leftPoint: number = await this.checkPointLeft(
+      eventDto.userId,
+      eventDto.reviewId,
+    );
+
+    if (leftPoint < 1) {
+      throw new ForbiddenException('남은 포인트가 없습니다');
     }
 
     delete pointLog.id;
     const minusPointLog: Point = this.pointRepository.create({
       ...pointLog,
+      point: leftPoint,
       increase: false,
     });
     await this.pointRepository.save(minusPointLog);
@@ -127,5 +134,26 @@ export class EventService {
         placeId: placeId,
       },
     });
+  }
+
+  async checkPointLeft(userId: string, reviewId: string): Promise<number> {
+    const pointLogs: Point[] = await this.pointRepository.find({
+      where: {
+        userId: userId,
+        reviewId: reviewId,
+      },
+    });
+
+    let leftPoint: number = 0;
+    pointLogs.forEach((point) => {
+      if (!point.increase) {
+        leftPoint -= point.point;
+      } else {
+        leftPoint += point.point;
+      }
+    });
+
+    console.log(leftPoint);
+    return leftPoint;
   }
 }
